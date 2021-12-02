@@ -1,5 +1,4 @@
 <template>
-	<navbar :navbar_title="navbar_title"></navbar>
 	<van-swipe :autoplay="3000" :height="250">
 		<van-swipe-item class="my_swiper" @click="swiper_image_preview(i)" v-for="vant_images in vant_images"
 			:key="vant_images">
@@ -15,7 +14,7 @@
 			<div class="detail_van_row_content_title">
 				2016-09-01
 			</div>
-			<div class="detail_van_row_content_btn" @click="showPopup">
+			<div class="detail_van_row_content_btn">
 				views
 			</div>
 		</van-col>
@@ -84,24 +83,29 @@
 		</van-grid-item>
 	</van-grid>
 
+	<div class="pdfNoPage">
+		<div v-if="isLoading" class="mask">
+			<loading size="24px" vertical>加载中...</loading>
+		</div>
+		<div class="pdf-box">
+			<pdf v-for="i in numPages" :key="i" :src="pdfSrc" :page="i" @page-loaded="pageLoaded" />
+		</div>
+	</div>
 
-
-
-
-	<van-popup v-model:show="show" closeable
-		style=" width: 100vw; height: 100vh; padding-top: 5vh; box-sizing: border-box;">
-		<pdf_page></pdf_page>
-	</van-popup>
 </template>
 
 <script>
+	import pdf from 'vue3-pdf'
+	import {
+		Loading
+	} from 'vant'
+
 	import {
 		Swiper,
 		SwiperSlide
 	} from 'swiper/vue';
-	import pdf_page from './pop_pdf_page';
+
 	import 'swiper/swiper.min.css';
-	import navbar from './navbar';
 	import {
 		ImagePreview
 	} from 'vant';
@@ -127,30 +131,56 @@
 	];
 	const app_data = {
 		detail_title: "杂志标题",
-        navbar_title: "详细页"
 	};
 
 	/*const pdf_url = require("@/assets/pdf/pdf_example.pdf");*/
 	export default {
+		metaInfo: {
+			meta: [{
+					charset: 'utf-8'
+				},
+				{
+					name: 'viewport',
+					content: 'width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=2,user-scalable=yes'
+				}
+			]
+		},
+
 		name: 'detail',
 
+		props: {
+
+			pdfSrc: {
+				type: String,
+				
+				default: 'http://81.70.245.235/test.pdf',
+				/*default: 'http://portfolio.project-135.ithanhua.cn/resource/home/pdf/pdf_example.pdf',*/
+			}
+		},
 		data() {
 			return {
 				app_data,
+				numPages: undefined,
+				isLoading: true,
 			}
+		},
+		watch: {},
+		created() {},
+		mounted() {
+			this.getNumPages(this.pdfSrc)
 		},
 		components: {
 			Swiper,
 			SwiperSlide,
-			pdf_page: pdf_page,
-			navbar:navbar
+			pdf,
+			Loading,
+			[ImagePreview.Component.name]: ImagePreview.Component,
 		},
 		setup() {
 			const show = ref(false);
 			const showPopup = () => {
 				show.value = true;
 			};
-			const navbar_title = app_data.navbar_title;
 			const onSwiper = (swiper) => {
 				console.log(swiper);
 			};
@@ -164,7 +194,6 @@
 				swiper_images,
 				show,
 				showPopup,
-				navbar_title
 			};
 		},
 		computed: {
@@ -179,6 +208,47 @@
 					closeable: true,
 				});
 			},
+			getNumPages(url) {
+				var loadingTask = pdf.createLoadingTask(url)
+				loadingTask.promise.then(pdf => {
+					this.url = loadingTask
+					this.numPages = pdf.numPages
+					console.log(pdf.numPages);
+				}).catch((err) => {
+					console.log(err)
+				})
+			},
+			// 等pdf页数加载完成的时候，隐藏加载框
+			pageLoaded(num) {
+				if (num === this.numPages) {
+					this.isLoading = false
+				}
+			}
+
+			/*xiazai() {
+				const downloadTask = uni.downloadFile({
+					url: 'http://img.netbian.com/file/2019/0414/7bee7eef5fc44417a0b02a46576e7e16.jpg', //仅为示例，并非真实的资源
+					success: (res) => {
+						if (res.statusCode === 200) {
+							console.log('下载成功');
+						}
+						let that = this;
+						uni.saveFile({
+							tempFilePath: res.tempFilePath,
+							success: function(red) {
+								that.luj = red.savedFilePath
+								console.log(red)
+							}
+						});
+					}
+				});
+
+				downloadTask.onProgressUpdate((res) => {
+					console.log('下载进度' + res.progress);
+					console.log('已经下载的数据长度' + res.totalBytesWritten);
+					console.log('预期需要下载的数据总长度' + res.totalBytesExpectedToWrite);
+				});
+			}*/
 		}
 	}
 </script>
@@ -241,8 +311,6 @@
 		width: 100vw;
 		height: 100%;
 		position: relative;
-		overflow: hidden;
-		box-sizing: border-box;
 	}
 
 	.mask .van-loading {
@@ -252,5 +320,21 @@
 		transform: translate(-50%, -50%);
 	}
 
+	.pdf-box {
+		padding: 10px;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		max-width: 1024px;
+		width: 100%;
+		margin: 0 auto;
+		overflow-x: hidden;
+		height: 100%;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		font-size: .28rem;
 
+		span {
+			width: 100%;
+		}
+	}
 </style>

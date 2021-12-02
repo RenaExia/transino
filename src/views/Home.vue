@@ -3,19 +3,20 @@
 		<img alt="Vue logo" src="../assets/logo.png">
 		<detail msg="现在这个是detail" />
 	</div>-->
-	<van-tabs v-model:active="active" animated>
+	<navbar :navbar_title="navbar_title"></navbar>
+	<van-tabs v-model:active="active" class="my_van_tabs" animated>
 		<van-tab title="大连" name="3" class="my_tab">
 			<van-tree-select v-model:main-active-index="activeIndex" height="90vh" :items="items">
 				<template #content>
-					<van-grid clickable :gutter="8" v-if="activeIndex == 0" :column-num="3">
+					<van-grid clickable :gutter="8"  :column-num="3">
 						<van-grid-item v-for="value in 8" :key="value" icon-prefix="vant-icon-size" to="/detail"
 							icon="https://img.yzcdn.cn/vant/apple-2.jpg" text="文字1" />
 					</van-grid>
-					<van-grid clickable :gutter="8" v-if="activeIndex == 1" :column-num="3">
+					<van-grid clickable :gutter="8"  :column-num="3">
 						<van-grid-item v-for="value in 8" :key="value" icon-prefix="vant-icon-size" to="/detail"
 							icon="https://img.yzcdn.cn/vant/apple-1.jpg" text="文字2" />
 					</van-grid>
-					<van-grid clickable :gutter="8" v-if="activeIndex == 2" :column-num="3">
+					<van-grid clickable :gutter="8"  :column-num="3">
 						<van-grid-item v-for="value in 16" :key="value" icon-prefix="vant-icon-size" to="/detail"
 							icon="https://img.yzcdn.cn/vant/apple-1.jpg" text="文字3" />
 					</van-grid>
@@ -23,15 +24,27 @@
 			</van-tree-select>
 		</van-tab>
 		<van-tab title="广州" name="d" class="my_tab">
-			<van-empty image="search" description="广州暂无数组" />
+			<van-tree-select v-model:main-active-index="activeIndex" height="90vh" :items="items">
+				<template #content>
+					<van-grid clickable :gutter="8"  :column-num="3">
+						<van-grid-item v-for="value in 8" :key="value" icon-prefix="vant-icon-size" to="/detail"
+							icon="https://img.yzcdn.cn/vant/apple-2.jpg" text="文字1" />
+					</van-grid>
+					<van-grid clickable :gutter="8"  :column-num="3">
+						<van-grid-item v-for="value in 8" :key="value" icon-prefix="vant-icon-size" to="/detail"
+							icon="https://img.yzcdn.cn/vant/apple-1.jpg" text="文字2" />
+					</van-grid>
+					<van-grid clickable :gutter="8"  :column-num="3">
+						<van-grid-item v-for="value in 16" :key="value" icon-prefix="vant-icon-size" to="/detail"
+							icon="https://img.yzcdn.cn/vant/apple-1.jpg" text="文字3" />
+					</van-grid>
+				</template>
+			</van-tree-select>
 		</van-tab>
 		<van-tab title="北京" name="2" class="my_tab">
 			<van-empty image="error" description="网络错误" />
 		</van-tab>
-
 	</van-tabs>
-
-
 </template>
 
 
@@ -39,9 +52,8 @@
 	import {
 		ref
 	} from 'vue';
-
+	import navbar from './navbar';
 	const app_data = {
-
 		news_list: [{
 				title: "11111",
 				num: 11111
@@ -81,7 +93,8 @@
 			text: '2021年2月'
 		}, {
 			text: '2021年3月'
-		}]
+		}],
+		navbar_title: "首页"
 	};
 
 	export default {
@@ -91,10 +104,11 @@
 		},
 		setup() {
 			const activeIndex = ref(0);
-			console.log(this);
+			const navbar_title = app_data.navbar_title;
 			return {
 				activeIndex,
-				items:app_data.items
+				items: app_data.items,
+				navbar_title
 			};
 		},
 		computed: {
@@ -115,6 +129,10 @@
 				}
 			}
 		},
+		components: {
+			navbar: navbar
+		},
+	
 		methods: {
 			_this_tiem() {
 				this.$router.push({
@@ -173,5 +191,9 @@
 	.vant-icon-size>img {
 		width: 2em;
 		height: 2em;
+	}
+	.my_van_tabs{
+		height: 95vh;
+		overflow: hidden;
 	}
 </style>

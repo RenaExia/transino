@@ -1,5 +1,5 @@
 module.exports = {
-	/* publicPath: process.env.NODE_ENV === 'production' ? '/production-sub-path/' : '/',*/
+	publicPath: process.env.NODE_ENV === 'production' ? '/production-sub-path/' : '/',
 	/*devServer: {
 		proxy: {
 			'/api': {
@@ -17,7 +17,4 @@ module.exports = {
 	/*devServer: {
 		proxy: 'http://portfolio.project-135.ithanhua.cn',
 	},*/
-	devServer: {
-		proxy: 'http://81.70.245.235',
-	},
 }
