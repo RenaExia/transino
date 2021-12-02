@@ -1,6 +1,6 @@
 import {
 	createRouter,
-	createWebHistory
+	createWebHashHistory,
 } from 'vue-router'
 
 import Home from '../views/Home.vue'
@@ -32,11 +32,17 @@ const routes = [{
 		component: navbar
 		/*component: () => import('../views/About.vue')*/
 	
+	},
+	{
+		path: '/:catchAll(.*)',
+		redirect: {
+			name: 'Home'
+		},
 	}
 ]
 
 const router = createRouter({
-	history: createWebHistory(process.env.BASE_URL),
+	history: createWebHashHistory(),
 	routes
 })
 
